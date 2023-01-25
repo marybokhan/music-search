@@ -4,15 +4,18 @@ class DownloadService {
 
   // MARK: - Properties
 
-  // TODO 4
+    var activeDownloads: [URL: Download] = [:]
+    var downloadsSession: URLSession!
   
-  var downloadsSession: URLSession!
-  
-
   // MARK: - Internal Methods
     
     // TODO 8
     func startDownload(_ track: MusicTrack) {
+        let download = Download(track: track)
+        download.task = self.downloadsSession.downloadTask(with: track.previewURL)
+        download.task?.resume()
+        download.isDownloading = true
+        self.activeDownloads[download.track.previewURL] = download
         
     }
 

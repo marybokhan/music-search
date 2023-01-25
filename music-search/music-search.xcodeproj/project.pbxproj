@@ -15,6 +15,7 @@
 		A11D181529803A110019D1CB /* MusicTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11D181429803A110019D1CB /* MusicTrack.swift */; };
 		A11D1817298055E30019D1CB /* QueryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11D1816298055E30019D1CB /* QueryService.swift */; };
 		A11D1819298055F70019D1CB /* DownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11D1818298055F70019D1CB /* DownloadService.swift */; };
+		A1B1FADE298185BB00B3F9B0 /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B1FADD298185BB00B3F9B0 /* Download.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		A11D181429803A110019D1CB /* MusicTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicTrack.swift; sourceTree = "<group>"; };
 		A11D1816298055E30019D1CB /* QueryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryService.swift; sourceTree = "<group>"; };
 		A11D1818298055F70019D1CB /* DownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadService.swift; sourceTree = "<group>"; };
+		A1B1FADD298185BB00B3F9B0 /* Download.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Download.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 				A11D1802297FECE20019D1CB /* ViewController.swift */,
 				A11D18122980044E0019D1CB /* TableCell.swift */,
 				A11D181429803A110019D1CB /* MusicTrack.swift */,
+				A1B1FADD298185BB00B3F9B0 /* Download.swift */,
 				A11D181A298056100019D1CB /* Networking */,
 				A11D1807297FECE30019D1CB /* Assets.xcassets */,
 				A11D1809297FECE30019D1CB /* LaunchScreen.storyboard */,
@@ -156,6 +159,7 @@
 				A11D1817298055E30019D1CB /* QueryService.swift in Sources */,
 				A11D1803297FECE20019D1CB /* ViewController.swift in Sources */,
 				A11D17FF297FECE20019D1CB /* AppDelegate.swift in Sources */,
+				A1B1FADE298185BB00B3F9B0 /* Download.swift in Sources */,
 				A11D1819298055F70019D1CB /* DownloadService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

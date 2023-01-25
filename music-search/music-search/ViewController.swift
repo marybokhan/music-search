@@ -5,18 +5,19 @@ class ViewController: UIViewController {
     
 // MARK: Properties
     
-    let searchBar: UISearchBar = {
+    lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.barTintColor = .orange
         searchBar.placeholder = "Song name or artist"
         searchBar.isTranslucent = true
         searchBar.isUserInteractionEnabled = true
+        searchBar.delegate = self
         return searchBar
     }()
     
     let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .lightGray
+        tableView.backgroundColor = .systemGray4
         tableView.isScrollEnabled = true
         tableView.bounces = true
         tableView.isUserInteractionEnabled = true
@@ -29,7 +30,12 @@ class ViewController: UIViewController {
     let downloadService = DownloadService()
     let queryService = QueryService()
     
-    // TODO 6
+    lazy var downloadsSession: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        return URLSession(configuration: configuration,
+                          delegate: self,
+                          delegateQueue: nil)
+    }()
     
     var searchResults: [MusicTrack] = []
     
@@ -46,7 +52,7 @@ class ViewController: UIViewController {
         self.setupUI()
         
         self.tableView.tableFooterView = UIView()
-        // TODO 7
+        self.downloadService.downloadsSession = self.downloadsSession
         
     }
 
@@ -217,5 +223,9 @@ extension ViewController: TableCellDelegate {
 
 // TODO 19
 
-// TODO 5
+extension ViewController: URLSessionDownloadDelegate {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        print("Finished downloading to \(location)")
+    }
+}
 

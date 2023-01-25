@@ -21,29 +21,34 @@ class TableCell: UITableViewCell {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.backgroundColor = .yellow
         label.textColor = .black
         label.textAlignment = .left
         label.adjustsFontSizeToFitWidth = true
-        label.text = "22"
         return label
     }()
     
     let artistLabel: UILabel = {
         let label = UILabel()
-        label.backgroundColor = .yellow
         label.textColor = .gray
         label.textAlignment = .left
         label.adjustsFontSizeToFitWidth = true
-        label.text = "Taylor Swift"
         return label
     }()
     
-    var pauseButton: UIButton!
-    var cancelButton: UIButton!
-    var downloadButton: UIButton!
-    var progressView: UIProgressView!
-    var progressLabel: UILabel!
+    var pauseButton: UIButton?
+    var cancelButton: UIButton?
+    
+    lazy var downloadButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Download", for: .normal)
+        button.setTitleColor(.red, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 15)
+        button.addTarget(self, action: #selector(self.downloadTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    var progressView: UIProgressView?
+    var progressLabel: UILabel?
     
     var delegate: TableCellDelegate?
 
@@ -64,7 +69,7 @@ class TableCell: UITableViewCell {
         self.contentView.backgroundColor = .clear
         self.contentView.clipsToBounds = true
         
-        [self.titleLabel, self.artistLabel].forEach {
+        [self.titleLabel, self.artistLabel, self.downloadButton].forEach {
             self.contentView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -73,19 +78,24 @@ class TableCell: UITableViewCell {
             self.titleLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor),
             self.titleLabel.heightAnchor.constraint(equalToConstant: 20),
             self.titleLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor),
-            self.titleLabel.widthAnchor.constraint(equalToConstant: 150)
+            self.titleLabel.widthAnchor.constraint(equalToConstant: 300)
         ])
         
         NSLayoutConstraint.activate([
             self.artistLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor),
             self.artistLabel.heightAnchor.constraint(equalToConstant: 20),
             self.artistLabel.leftAnchor.constraint(equalTo: self.contentView.leftAnchor),
-            self.artistLabel.widthAnchor.constraint(equalToConstant: 150)
+            self.artistLabel.widthAnchor.constraint(equalToConstant: 300)
+        ])
+        
+        NSLayoutConstraint.activate([
+            self.downloadButton.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
+            self.downloadButton.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10)
         ])
     }
     
     func pauseOrResumeTapped(_ sender: AnyObject) {
-      if(pauseButton.titleLabel?.text == "Pause") {
+      if(pauseButton?.titleLabel?.text == "Pause") {
         delegate?.pauseTapped(self)
       } else {
         delegate?.resumeTapped(self)
@@ -96,8 +106,8 @@ class TableCell: UITableViewCell {
       delegate?.cancelTapped(self)
     }
     
-    func downloadTapped(_ sender: AnyObject) {
-      delegate?.downloadTapped(self)
+    @objc func downloadTapped(_ sender: AnyObject) {
+        delegate?.downloadTapped(self)
     }
     
     // TODO 12
