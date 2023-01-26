@@ -9,7 +9,6 @@ class DownloadService {
   
   // MARK: - Internal Methods
     
-    // TODO 8
     func startDownload(_ track: MusicTrack) {
         let download = Download(track: track)
         download.task = self.downloadsSession.downloadTask(with: track.previewURL)
@@ -19,20 +18,38 @@ class DownloadService {
         
     }
 
-  // TODO 9
     func cancelDownload(_ track: MusicTrack) {
-        
+        guard let download = self.activeDownloads[track.previewURL] else {
+            return
+        }
+        download.task?.cancel()
+        self.activeDownloads[track.previewURL] = nil
     }
   
-  // TODO 10
     func pauseDownload(_ track: MusicTrack) {
-        
+        guard let download = self.activeDownloads[track.previewURL],
+              download.isDownloading else {
+            return
+        }
+        download.task?.cancel(byProducingResumeData: { data in
+            download.resumeData = data
+        })
+        download.isDownloading = false
     }
   
-  // TODO 11
     func resumeDownload(_ track: MusicTrack) {
+        guard let download = self.activeDownloads[track.previewURL] else {
+            return
+        }
         
+        if let resumeData = download.resumeData {
+            download.task = self.downloadsSession.downloadTask(withResumeData: resumeData)
+        } else {
+            download.task = self.downloadsSession.downloadTask(with: download.track.previewURL)
+        }
+        
+        download.task?.resume()
+        download.isDownloading = true
     }
-  
 
 }
