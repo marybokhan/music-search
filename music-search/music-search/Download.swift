@@ -8,7 +8,7 @@ class Download {
     var progress: Float = 0
     var resumeData: Data?
     var task: URLSessionDownloadTask?
-    var track: MusicTrack
+    let track: MusicTrack
     
 // MARK: - Init
     

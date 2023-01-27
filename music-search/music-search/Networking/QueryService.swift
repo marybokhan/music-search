@@ -17,38 +17,33 @@ class QueryService {
 // MARK: - Internal logic
 
     func getSearchResults(searchTerm: String, completion: @escaping QueryResult) {
-      
         self.dataTask?.cancel()
       
-        if var urlComponents = URLComponents(string: "https://itunes.apple.com/search") {
-            urlComponents.query = "media=music&entity=song&term=\(searchTerm)"
+        guard var urlComponents = URLComponents(string: "https://itunes.apple.com/search") else { return }
+        
+        urlComponents.query = "media=music&entity=song&term=\(searchTerm)"
+      
+        guard let url = urlComponents.url else { return }
+      
+        self.dataTask = self.defaultSession.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            defer { self.dataTask = nil }
           
-            guard let url = urlComponents.url else {
-                return
-            }
-          
-            self.dataTask = self.defaultSession.dataTask(with: url) { [weak self] data, response, error in
-                defer {
-                    self?.dataTask = nil
-                }
+            if let error = error {
+                self.errorMessage += "DataTask error: " + error.localizedDescription + "\n"
+            } else if
+                let data = data,
+                let response = response as? HTTPURLResponse,
+                response.statusCode == 200 {
+                self.updateSearchResults(data)
               
-                if let error = error {
-                    self?.errorMessage += "DataTask error: " + error.localizedDescription + "\n"
-                } else if
-                    let data = data,
-                    let response = response as? HTTPURLResponse,
-                    response.statusCode == 200 {
-                    self?.updateSearchResults(data)
-                  
-                    DispatchQueue.main.async {
-                        completion(self?.tracks, self?.errorMessage ?? "")
-                    }
+                DispatchQueue.main.async {
+                    completion(self.tracks, self.errorMessage)
                 }
             }
-            self.dataTask?.resume()
-      
         }
-      
+        self.dataTask?.resume()
     }
   
 // MARK: - Private logic
@@ -83,7 +78,6 @@ class QueryService {
                 self.errorMessage += "Problem parsing trackDictionary\n"
             }
         }
-        
     }
     
 }

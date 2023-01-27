@@ -1,4 +1,4 @@
-import Foundation.NSURL
+import Foundation
 
 class MusicTrack {
 

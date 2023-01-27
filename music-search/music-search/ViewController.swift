@@ -3,9 +3,9 @@ import AVKit
 
 class ViewController: UIViewController {
     
-// MARK: - Properties
+    // MARK: - Properties
     
-    lazy var searchBar: UISearchBar = {
+    private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.barTintColor = .orange
         searchBar.placeholder = "Song name or artist"
@@ -15,7 +15,7 @@ class ViewController: UIViewController {
         return searchBar
     }()
     
-    let tableView: UITableView = {
+    private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.isScrollEnabled = true
         tableView.bounces = true
@@ -25,37 +25,40 @@ class ViewController: UIViewController {
         return tableView
     }()
     
-    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    let downloadService = DownloadService()
-    let queryService = QueryService()
+    private let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private let downloadService = DownloadService()
+    private let queryService = QueryService()
     
-    lazy var downloadsSession: URLSession = {
-        let configuration = URLSessionConfiguration.default
-        return URLSession(configuration: configuration,
+    private lazy var downloadsSession: URLSession = {
+        return URLSession(configuration: .default,
                           delegate: self,
                           delegateQueue: nil)
     }()
     
-    var searchResults: [MusicTrack] = []
+    private var searchResults: [MusicTrack] = []
     
-    lazy var tapRecognizer: UITapGestureRecognizer = {
+    private lazy var tapRecognizer: UITapGestureRecognizer = {
         var recognizer = UITapGestureRecognizer(target:self, action: #selector(self.dismissKeyboard))
         return recognizer
     }()
     
     // MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupUI()
-        self.tableView.tableFooterView = UIView()
         self.downloadService.downloadsSession = self.downloadsSession
     }
-
-// MARK: - Private logic
+    
+    // MARK: - Internal logic
+    
+    func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .topAttached
+    }
+    
+    // MARK: - Private logic
     
     private func setupUI() {
-        
         self.view.backgroundColor = .white
         
         [self.searchBar, self.tableView].forEach {
@@ -79,15 +82,15 @@ class ViewController: UIViewController {
         self.tableView.dataSource = self
     }
     
-    @objc func dismissKeyboard() {
+    @objc private func dismissKeyboard() {
         self.searchBar.resignFirstResponder()
     }
     
-    func localFilePath(for url: URL) -> URL {
+    private func localFilePath(for url: URL) -> URL {
         return self.documentsPath.appendingPathComponent(url.lastPathComponent)
     }
     
-    func playDownload(_ track: MusicTrack) {
+    private func playDownload(_ track: MusicTrack) {
         let playerViewController = AVPlayerViewController()
         self.present(playerViewController, animated: true, completion: nil)
         let url = self.localFilePath(for: track.previewURL)
@@ -96,11 +99,7 @@ class ViewController: UIViewController {
         player.play()
     }
     
-    func position(for bar: UIBarPositioning) -> UIBarPosition {
-        return .topAttached
-    }
-    
-    func reload(_ row: Int) {
+    private func reload(_ row: Int) {
         self.tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .none)
     }
 }
@@ -113,7 +112,7 @@ extension ViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: TableCell = tableView.dequeueReusableCell(withIdentifier: TableCell.identifier, for: indexPath) as! TableCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: TableCell.identifier, for: indexPath) as! TableCell
         cell.delegate = self
         
         let track = self.searchResults[indexPath.row]
@@ -135,7 +134,7 @@ extension ViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-      return 62.0
+        return 62.0
     }
     
 }
@@ -146,21 +145,16 @@ extension ViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.dismissKeyboard()
         
-        guard let searchText = searchBar.text, !searchText.isEmpty else {
-            return
-            }
-      
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-
+        guard let searchText = searchBar.text, !searchText.isEmpty else { return }
+        
         self.queryService.getSearchResults(searchTerm: searchText) { [weak self] results, errorMessage in
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        
-        if let results = results {
-          self?.searchResults = results
-          self?.tableView.reloadData()
-          self?.tableView.setContentOffset(CGPoint.zero, animated: false)
-        }
-        
+            
+            if let self = self, let results = results {
+                self.searchResults = results
+                self.tableView.reloadData()
+                self.tableView.setContentOffset(.zero, animated: false)
+            }
+            
             if !errorMessage.isEmpty {
                 print("Search error: " + errorMessage)
             }
@@ -217,16 +211,12 @@ extension ViewController: TableCellDelegate {
 
 extension ViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        
-        guard let sourceURL = downloadTask.originalRequest?.url else {
-            return
-        }
+        guard let sourceURL = downloadTask.originalRequest?.url else { return }
         
         let download = self.downloadService.activeDownloads[sourceURL]
         self.downloadService.activeDownloads[sourceURL] = nil
         
-        let destinationURL = localFilePath(for: sourceURL)
-        print(destinationURL)
+        let destinationURL = self.localFilePath(for: sourceURL)
         
         let fileManager = FileManager.default
         try? fileManager.removeItem(at: destinationURL)
@@ -240,18 +230,15 @@ extension ViewController: URLSessionDownloadDelegate {
         
         if let index = download?.track.index {
             DispatchQueue.main.async { [weak self] in
-                self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                self?.reload(index)
             }
         }
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        
         guard let url = downloadTask.originalRequest?.url,
               let download = self.downloadService.activeDownloads[url]
-        else {
-            return
-        }
+        else { return }
         
         download.progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
         let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: .file)

@@ -12,14 +12,14 @@ protocol TableCellDelegate {
 // MARK: - TableCell
 
 class TableCell: UITableViewCell {
-
-// MARK: - Internal properties
+    
+    // MARK: - Internal properties
     
     static let identifier = "TableCell"
     
-// MARK: - Properties
+    // MARK: - Properties
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
         label.textAlignment = .left
@@ -28,7 +28,7 @@ class TableCell: UITableViewCell {
         return label
     }()
     
-    let artistLabel: UILabel = {
+    private let artistLabel: UILabel = {
         let label = UILabel()
         label.textColor = .gray
         label.textAlignment = .left
@@ -37,7 +37,7 @@ class TableCell: UITableViewCell {
         return label
     }()
     
-    lazy var pauseButton: UIButton = {
+    private lazy var pauseButton: UIButton = {
         let button = UIButton()
         button.setTitle("Pause", for: .normal)
         button.setTitleColor(.red, for: .normal)
@@ -46,7 +46,7 @@ class TableCell: UITableViewCell {
         return button
     }()
     
-    lazy var cancelButton: UIButton = {
+    private lazy var cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("Cancel", for: .normal)
         button.setTitleColor(.red, for: .normal)
@@ -55,7 +55,7 @@ class TableCell: UITableViewCell {
         return button
     }()
     
-    lazy var downloadButton: UIButton = {
+    private lazy var downloadButton: UIButton = {
         let button = UIButton()
         button.setTitle("Download", for: .normal)
         button.setTitleColor(.red, for: .normal)
@@ -64,7 +64,7 @@ class TableCell: UITableViewCell {
         return button
     }()
     
-    lazy var progressView: UIProgressView = {
+    private lazy var progressView: UIProgressView = {
         let view = UIProgressView()
         view.progressViewStyle = .default
         view.contentMode = .scaleToFill
@@ -73,7 +73,7 @@ class TableCell: UITableViewCell {
         return view
     }()
     
-    lazy var progressLabel: UILabel = {
+    private lazy var progressLabel: UILabel = {
         let label = UILabel()
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 11)
@@ -88,8 +88,8 @@ class TableCell: UITableViewCell {
     }()
     
     var delegate: TableCellDelegate?
-
-// MARK: - Init
+    
+    // MARK: - Init
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -100,10 +100,39 @@ class TableCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-// MARK: - Private logic
+    // MARK: - Internal logic
+    
+    func configure(track: MusicTrack, downloaded: Bool, download: Download?) {
+        self.titleLabel.text = track.name
+        self.artistLabel.text = track.artist
+        
+        var showDownloadControls = false
+        
+        if let download = download {
+            showDownloadControls = true
+            let title = download.isDownloading ? "Pause" : "Resume"
+            self.pauseButton.setTitle(title, for: .normal)
+            self.progressLabel.text = download.isDownloading ? "Downloading..." : "Paused"
+        }
+        
+        self.pauseButton.isHidden = !showDownloadControls
+        self.cancelButton.isHidden = !showDownloadControls
+        self.progressView.isHidden = !showDownloadControls
+        self.progressLabel.isHidden = !showDownloadControls
+        
+        // If the track is already downloaded, enable cell selection and hide the Download button.
+        self.selectionStyle = downloaded ? .gray : .none
+        self.downloadButton.isHidden = downloaded || showDownloadControls
+    }
+    
+    func updateDisplay(progress: Float, totalSize: String) {
+        self.progressView.progress = progress
+        self.progressLabel.text = String(format: "%.1f%% of %@", progress * 100, totalSize)
+    }
+    
+    // MARK: - Private logic
     
     private func setupUI() {
-        
         self.contentView.backgroundColor = .clear
         self.contentView.clipsToBounds = true
         
@@ -141,56 +170,24 @@ class TableCell: UITableViewCell {
             
             self.progressLabel.centerYAnchor.constraint(equalTo: self.progressView.centerYAnchor),
             self.progressLabel.leftAnchor.constraint(equalTo: self.progressView.rightAnchor, constant: 6),
-            self.progressView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -6)
-            
+            self.progressLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -6)
         ])
-        
     }
     
-    @objc func pauseOrResumeTapped(_ sender: AnyObject) {
-        if(pauseButton.titleLabel?.text == "Pause") {
+    @objc private func pauseOrResumeTapped(_ sender: AnyObject) {
+        if(self.pauseButton.titleLabel?.text == "Pause") {
             self.delegate?.pauseTapped(self)
         } else {
             self.delegate?.resumeTapped(self)
         }
     }
     
-    @objc func cancelTapped(_ sender: AnyObject) {
+    @objc private func cancelTapped(_ sender: AnyObject) {
         self.delegate?.cancelTapped(self)
     }
     
-    @objc func downloadTapped(_ sender: AnyObject) {
+    @objc private func downloadTapped(_ sender: AnyObject) {
         self.delegate?.downloadTapped(self)
     }
     
-    func configure(track: MusicTrack, downloaded: Bool, download: Download?) {
-        
-        self.titleLabel.text = track.name
-        self.artistLabel.text = track.artist
-      
-        var showDownloadControls = false
-      
-        if let download = download {
-            showDownloadControls = true
-            let title = download.isDownloading ? "Pause" : "Resume"
-            self.pauseButton.setTitle(title, for: .normal)
-            self.progressLabel.text = download.isDownloading ? "Downloading..." : "Paused"
-        }
-        
-        self.pauseButton.isHidden = !showDownloadControls
-        self.cancelButton.isHidden = !showDownloadControls
-        self.progressView.isHidden = !showDownloadControls
-        self.progressLabel.isHidden = !showDownloadControls
-      
-        // If the track is already downloaded, enable cell selection and hide the Download button.
-        self.selectionStyle = downloaded ? UITableViewCell.SelectionStyle.gray : UITableViewCell.SelectionStyle.none
-        downloadButton.isHidden = downloaded || showDownloadControls
-        
-    }
-    
-    func updateDisplay(progress: Float, totalSize: String) {
-        self.progressView.progress = progress
-        self.progressLabel.text = String(format: "%.1f%% of %@", progress * 100, totalSize)
-    }
-
 }
