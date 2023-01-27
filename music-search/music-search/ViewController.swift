@@ -3,7 +3,7 @@ import AVKit
 
 class ViewController: UIViewController {
     
-// MARK: Properties
+// MARK: - Properties
     
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -17,7 +17,6 @@ class ViewController: UIViewController {
     
     let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .systemGray4
         tableView.isScrollEnabled = true
         tableView.bounces = true
         tableView.isUserInteractionEnabled = true
@@ -40,40 +39,36 @@ class ViewController: UIViewController {
     var searchResults: [MusicTrack] = []
     
     lazy var tapRecognizer: UITapGestureRecognizer = {
-      var recognizer = UITapGestureRecognizer(target:self, action: #selector(dismissKeyboard))
-      return recognizer
+        var recognizer = UITapGestureRecognizer(target:self, action: #selector(self.dismissKeyboard))
+        return recognizer
     }()
     
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setupUI()
-        
         self.tableView.tableFooterView = UIView()
         self.downloadService.downloadsSession = self.downloadsSession
-        
     }
 
-// MARK: Private logic
+// MARK: - Private logic
+    
     private func setupUI() {
         
         self.view.backgroundColor = .white
         
-        self.view.addSubview(self.searchBar)
-        self.view.addSubview(self.tableView)
+        [self.searchBar, self.tableView].forEach {
+            self.view.addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
         
-        self.searchBar.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             self.searchBar.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             self.searchBar.heightAnchor.constraint(equalToConstant: 60),
             self.searchBar.leftAnchor.constraint(equalTo: self.view.leftAnchor),
-            self.searchBar.rightAnchor.constraint(equalTo: self.view.rightAnchor)
-        ])
-        
-        self.tableView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
+            self.searchBar.rightAnchor.constraint(equalTo: self.view.rightAnchor),
+            
             self.tableView.topAnchor.constraint(equalTo: self.searchBar.bottomAnchor),
             self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             self.tableView.leftAnchor.constraint(equalTo: self.view.leftAnchor),
@@ -102,7 +97,7 @@ class ViewController: UIViewController {
     }
     
     func position(for bar: UIBarPositioning) -> UIBarPosition {
-      return .topAttached
+        return .topAttached
     }
     
     func reload(_ row: Int) {
@@ -112,18 +107,16 @@ class ViewController: UIViewController {
 
 
 extension ViewController: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         self.searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell: TableCell = tableView.dequeueReusableCell(withIdentifier: TableCell.identifier,
-                                                            for: indexPath) as! TableCell
+        let cell: TableCell = tableView.dequeueReusableCell(withIdentifier: TableCell.identifier, for: indexPath) as! TableCell
         cell.delegate = self
         
         let track = self.searchResults[indexPath.row]
-        // TODO 13
         cell.configure(track: track, downloaded: track.downloaded, download: self.downloadService.activeDownloads[track.previewURL])
         return cell
     }
@@ -221,7 +214,6 @@ extension ViewController: TableCellDelegate {
     
 }
 
-// TODO 19
 
 extension ViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
@@ -270,5 +262,5 @@ extension ViewController: URLSessionDownloadDelegate {
             }
         }
     }
+    
 }
-

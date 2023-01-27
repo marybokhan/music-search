@@ -2,7 +2,7 @@ import Foundation.NSURL
 
 class MusicTrack {
 
-  // MARK: - Private properties
+  // MARK: - Properties
     
     let name: String
     let artist: String
@@ -19,5 +19,6 @@ class MusicTrack {
       self.index = index
       self.previewURL = previewURL
   }
+    
 }
 

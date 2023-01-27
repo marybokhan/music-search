@@ -17,7 +17,7 @@ class TableCell: UITableViewCell {
     
     static let identifier = "TableCell"
     
-// MARK: - Private properties
+// MARK: - Properties
     
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -25,7 +25,6 @@ class TableCell: UITableViewCell {
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 16)
         label.adjustsFontSizeToFitWidth = true
-//        label.backgroundColor = .green
         return label
     }()
     
@@ -35,7 +34,6 @@ class TableCell: UITableViewCell {
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 14)
         label.adjustsFontSizeToFitWidth = true
-//        label.backgroundColor = .blue
         return label
     }()
     
@@ -45,7 +43,6 @@ class TableCell: UITableViewCell {
         button.setTitleColor(.red, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15)
         button.addTarget(self, action: #selector(self.pauseOrResumeTapped), for: .touchUpInside)
-//        button.backgroundColor = .orange
         return button
     }()
     
@@ -96,7 +93,7 @@ class TableCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupUI()
+        self.setupUI()
     }
     
     required init?(coder: NSCoder) {
@@ -106,6 +103,7 @@ class TableCell: UITableViewCell {
 // MARK: - Private logic
     
     private func setupUI() {
+        
         self.contentView.backgroundColor = .clear
         self.contentView.clipsToBounds = true
         
@@ -136,10 +134,6 @@ class TableCell: UITableViewCell {
             self.pauseButton.rightAnchor.constraint(equalTo: self.cancelButton.leftAnchor, constant: -5),
             self.pauseButton.widthAnchor.constraint(equalToConstant: 57),
             
-            self.pauseButton.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
-            self.pauseButton.rightAnchor.constraint(equalTo: self.cancelButton.leftAnchor, constant: -5),
-            self.pauseButton.widthAnchor.constraint(equalToConstant: 57),
-            
             self.progressView.topAnchor.constraint(equalTo: self.artistLabel.bottomAnchor, constant: 6),
             self.progressView.heightAnchor.constraint(equalToConstant: 3),
             self.progressView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 6),
@@ -155,23 +149,22 @@ class TableCell: UITableViewCell {
     
     @objc func pauseOrResumeTapped(_ sender: AnyObject) {
         if(pauseButton.titleLabel?.text == "Pause") {
-            delegate?.pauseTapped(self)
+            self.delegate?.pauseTapped(self)
         } else {
-            delegate?.resumeTapped(self)
+            self.delegate?.resumeTapped(self)
         }
     }
     
     @objc func cancelTapped(_ sender: AnyObject) {
-      delegate?.cancelTapped(self)
+        self.delegate?.cancelTapped(self)
     }
     
     @objc func downloadTapped(_ sender: AnyObject) {
-        delegate?.downloadTapped(self)
+        self.delegate?.downloadTapped(self)
     }
     
-    // TODO 12
-    
     func configure(track: MusicTrack, downloaded: Bool, download: Download?) {
+        
         self.titleLabel.text = track.name
         self.artistLabel.text = track.artist
       
@@ -189,9 +182,10 @@ class TableCell: UITableViewCell {
         self.progressView.isHidden = !showDownloadControls
         self.progressLabel.isHidden = !showDownloadControls
       
-      // If the track is already downloaded, enable cell selection and hide the Download button.
-      selectionStyle = downloaded ? UITableViewCell.SelectionStyle.gray : UITableViewCell.SelectionStyle.none
-      downloadButton.isHidden = downloaded || showDownloadControls
+        // If the track is already downloaded, enable cell selection and hide the Download button.
+        self.selectionStyle = downloaded ? UITableViewCell.SelectionStyle.gray : UITableViewCell.SelectionStyle.none
+        downloadButton.isHidden = downloaded || showDownloadControls
+        
     }
     
     func updateDisplay(progress: Float, totalSize: String) {

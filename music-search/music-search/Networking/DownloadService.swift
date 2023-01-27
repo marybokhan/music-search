@@ -2,12 +2,12 @@ import Foundation
 
 class DownloadService {
 
-  // MARK: - Properties
+// MARK: - Properties
 
     var activeDownloads: [URL: Download] = [:]
     var downloadsSession: URLSession!
   
-  // MARK: - Internal Methods
+  // MARK: - Internal logic
     
     func startDownload(_ track: MusicTrack) {
         let download = Download(track: track)
@@ -15,7 +15,6 @@ class DownloadService {
         download.task?.resume()
         download.isDownloading = true
         self.activeDownloads[download.track.previewURL] = download
-        
     }
 
     func cancelDownload(_ track: MusicTrack) {

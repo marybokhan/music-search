@@ -10,6 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let window = UIWindow(frame: UIScreen.main.bounds)
         let viewController = ViewController()
         window.rootViewController = viewController
+        window.overrideUserInterfaceStyle = .light
         window.makeKeyAndVisible()
         self.window = window
         return true
