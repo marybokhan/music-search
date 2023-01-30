@@ -49,35 +49,14 @@ class QueryService {
 // MARK: - Private logic
 
     private func updateSearchResults(_ data: Data) {
-        var response: JSONDictionary?
         self.tracks.removeAll()
-    
+
         do {
-            response = try JSONSerialization.jsonObject(with: data, options: []) as? JSONDictionary
-        } catch let parseError as NSError {
-            self.errorMessage += "JSONSerialization error: \(parseError.localizedDescription)\n"
+            let decodedResponce = try JSONDecoder().decode(MusicTracksResponse.self, from: data)
+            self.tracks = decodedResponce.getMusicTracks()
+        } catch {
+            self.errorMessage += "\(error)\n"
             return
-        }
-    
-        guard let array = response!["results"] as? [Any] else {
-            self.errorMessage += "Dictionary does not contain results key\n"
-            return
-        }
-    
-        var index = 0
-    
-        for trackDictionary in array {
-            if let trackDictionary = trackDictionary as? JSONDictionary,
-               let previewURLString = trackDictionary["previewUrl"] as? String,
-               let previewURL = URL(string: previewURLString),
-               let name = trackDictionary["trackName"] as? String,
-               let artist = trackDictionary["artistName"] as? String {
-                self.tracks.append(MusicTrack(name: name, artist: artist, previewURL: previewURL, index: index))
-                index += 1
-            } else {
-                self.errorMessage += "Problem parsing trackDictionary\n"
-            }
         }
     }
-    
 }

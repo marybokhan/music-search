@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18CE8C5B29884A630097DE49 /* MusicTracksResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18CE8C5A29884A630097DE49 /* MusicTracksResponse.swift */; };
 		A11D17FF297FECE20019D1CB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11D17FE297FECE20019D1CB /* AppDelegate.swift */; };
 		A11D1803297FECE20019D1CB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11D1802297FECE20019D1CB /* ViewController.swift */; };
 		A11D1808297FECE30019D1CB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A11D1807297FECE30019D1CB /* Assets.xcassets */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		18CE8C5A29884A630097DE49 /* MusicTracksResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicTracksResponse.swift; sourceTree = "<group>"; };
 		A11D17FB297FECE20019D1CB /* music-search.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "music-search.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11D17FE297FECE20019D1CB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A11D1802297FECE20019D1CB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 		A11D181A298056100019D1CB /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				18CE8C5A29884A630097DE49 /* MusicTracksResponse.swift */,
 				A11D1816298055E30019D1CB /* QueryService.swift */,
 				A11D1818298055F70019D1CB /* DownloadService.swift */,
 			);
@@ -160,6 +163,7 @@
 				A11D1803297FECE20019D1CB /* ViewController.swift in Sources */,
 				A11D17FF297FECE20019D1CB /* AppDelegate.swift in Sources */,
 				A1B1FADE298185BB00B3F9B0 /* Download.swift in Sources */,
+				18CE8C5B29884A630097DE49 /* MusicTracksResponse.swift in Sources */,
 				A11D1819298055F70019D1CB /* DownloadService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

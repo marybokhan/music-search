@@ -1,24 +1,25 @@
 import Foundation
 
-class MusicTrack {
+final class MusicTrack {
 
-  // MARK: - Properties
+    // MARK: - Properties
     
     let name: String
     let artist: String
-    let index: Int
     let previewURL: URL
-    
+    let index: Int
     var downloaded = false
-  
-  // MARK: - Init
 
-  init(name: String, artist: String, previewURL: URL, index: Int) {
-      self.name = name
-      self.artist = artist
-      self.index = index
-      self.previewURL = previewURL
-  }
-    
+    // MARK: - Init
+
+    init(name: String,
+         artist: String,
+         previewURL: URL,
+         index: Int) {
+        self.name = name
+        self.artist = artist
+        self.previewURL = previewURL
+        self.index = index
+    }
 }
 
